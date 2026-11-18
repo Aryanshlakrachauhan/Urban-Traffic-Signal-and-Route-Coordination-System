@@ -1,5 +1,11 @@
 #include "traffic.h"
 
+/* --- Helper: Flush stdin buffer on invalid input --- */
+void flush_input(void) {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+}
+
 /* --- FRONTEND: Main Application Dashboard & Scenario Controller --- */
 void print_network_status(int V, Road roads[], int E) {
     int i;
@@ -41,17 +47,22 @@ int main(void) {
         printf("  URBAN TRAFFIC SIGNAL & ROUTE COORDINATION (CSEG3053)\n");
         printf("******************************************************\n");
         printf("  [1] Page 1: Divide & Conquer + Sorting\n");
-        printf("  [2] Page 2: Greedy Algorithms (Dijkstra, Kruskal, Activity, Knapsack)\n");
-        printf("  [3] Page 3: Dynamic Programming (0/1 Knapsack, Floyd, Bellman, LCS)\n");
+        printf("  [2] Page 2: Greedy Algorithms (Activity, Dijkstra, Kruskal, Prim, Knapsack, Huffman)\n");
+        printf("  [3] Page 3: Dynamic Programming (0/1 Knapsack, Floyd, Bellman, Matrix Chain, LCS, TSP)\n");
         printf("  [4] Page 4: Backtracking & Branch-and-Bound\n");
         printf("  [5] Page 5: Network Flow (Ford-Fulkerson) & Bipartite Matching\n");
-        printf("  [6] Page 6: Chinese Remainder Theorem & String Matching (KMP)\n");
+        printf("  [6] Page 6: Chinese Remainder Theorem & String Matching (Naive, RK, FA, KMP)\n");
         printf("  [7] View Road Network Status\n");
         printf("  [8] Toggle Road Incident Blockage (Live Demo Scenario Shock)\n");
         printf("  [0] Exit\n");
         printf("Select Page / Option: ");
 
-        if (scanf("%d", &page) != 1) break;
+        if (scanf("%d", &page) != 1) {
+            printf("Invalid input. Please enter a number between 0 and 8.\n");
+            flush_input();
+            page = -1;
+            continue;
+        }
 
         switch (page) {
             case 1:
@@ -78,13 +89,13 @@ int main(void) {
             case 8:
                 print_network_status(V, roads, E);
                 printf("Enter Road Index (0 to %d) to block/unblock: ", E - 1);
-                scanf("%d", &road_idx);
-                if (road_idx >= 0 && road_idx < E) {
+                if (scanf("%d", &road_idx) == 1 && road_idx >= 0 && road_idx < E) {
                     roads[road_idx].blocked = !roads[road_idx].blocked;
                     printf("Road [%d] status updated to: %s\n",
                            road_idx, roads[road_idx].blocked ? "BLOCKED" : "OPEN");
                 } else {
                     printf("Invalid road index.\n");
+                    flush_input();
                 }
                 break;
             case 0:

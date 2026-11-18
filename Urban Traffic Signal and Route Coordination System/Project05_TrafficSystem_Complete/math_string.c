@@ -20,12 +20,12 @@ int crt_sync(int rem[], int mod[], int k) {
     return result % prod;
 }
 
-/* --- BACKEND: Naive String Matching --- */
+/* --- BACKEND: 1. Naive String Matching --- */
 void naive_search(const char* text, const char* pat) {
     int n = (int)strlen(text);
     int m = (int)strlen(pat);
     int i, j;
-    printf("  Naive Matches at index: ");
+    printf("  [1] Naive Matches at index:            ");
     for (i = 0; i <= n - m; i++) {
         for (j = 0; j < m; j++) {
             if (text[i + j] != pat[j]) break;
@@ -35,13 +35,83 @@ void naive_search(const char* text, const char* pat) {
     printf("\n");
 }
 
-/* --- BACKEND: KMP String Matching --- */
+/* --- BACKEND: 2. Rabin-Karp String Matching --- */
+void rabin_karp_search(const char* text, const char* pat) {
+    int n = (int)strlen(text);
+    int m = (int)strlen(pat);
+    int d = 256;
+    int q = 101;
+    int p = 0, t = 0, h = 1;
+    int i, j;
+
+    for (i = 0; i < m - 1; i++) h = (h * d) % q;
+    for (i = 0; i < m; i++) {
+        p = (d * p + pat[i]) % q;
+        t = (d * t + text[i]) % q;
+    }
+
+    printf("  [2] Rabin-Karp Matches at index:       ");
+    for (i = 0; i <= n - m; i++) {
+        if (p == t) {
+            for (j = 0; j < m; j++) {
+                if (text[i + j] != pat[j]) break;
+            }
+            if (j == m) printf("%d ", i);
+        }
+        if (i < n - m) {
+            t = (d * (t - text[i] * h) + text[i + m]) % q;
+            if (t < 0) t += q;
+        }
+    }
+    printf("\n");
+}
+
+/* --- BACKEND: 3. Finite Automaton String Matching --- */
+int get_next_state(const char* pat, int m, int state, int x) {
+    if (state < m && x == (unsigned char)pat[state]) return state + 1;
+    int ns, i;
+    for (ns = state; ns > 0; ns--) {
+        if ((unsigned char)pat[ns - 1] == x) {
+            for (i = 0; i < ns - 1; i++) {
+                if (pat[i] != pat[state - ns + 1 + i]) break;
+            }
+            if (i == ns - 1) return ns;
+        }
+    }
+    return 0;
+}
+
+void finite_automaton_search(const char* text, const char* pat) {
+    int n = (int)strlen(text);
+    int m = (int)strlen(pat);
+    int (*TF)[256] = malloc((m + 1) * sizeof(*TF));
+    if (!TF) return;
+
+    int state, x, i;
+    for (state = 0; state <= m; ++state) {
+        for (x = 0; x < 256; ++x) {
+            TF[state][x] = get_next_state(pat, m, state, x);
+        }
+    }
+
+    printf("  [3] Finite Automaton Matches at index: ");
+    state = 0;
+    for (i = 0; i < n; i++) {
+        state = TF[state][(unsigned char)text[i]];
+        if (state == m) printf("%d ", i - m + 1);
+    }
+    printf("\n");
+    free(TF);
+}
+
+/* --- BACKEND: 4. KMP String Matching --- */
 void kmp_search(const char* text, const char* pat) {
     int n = (int)strlen(text);
     int m = (int)strlen(pat);
-    int lps[50];
-    int len = 0, i = 1, j = 0;
+    int *lps = (int*)malloc(m * sizeof(int));
+    if (!lps) return;
 
+    int len = 0, i = 1, j = 0;
     lps[0] = 0;
     while (i < m) {
         if (pat[i] == pat[len]) {
@@ -56,7 +126,7 @@ void kmp_search(const char* text, const char* pat) {
         }
     }
 
-    printf("  KMP Matches at index:   ");
+    printf("  [4] KMP Matches at index:              ");
     i = 0;
     while (i < n) {
         if (pat[j] == text[i]) { i++; j++; }
@@ -69,6 +139,7 @@ void kmp_search(const char* text, const char* pat) {
         }
     }
     printf("\n");
+    free(lps);
 }
 
 /* --- FRONTEND: Page 6 Menu --- */
@@ -83,9 +154,9 @@ void run_math_string_page(void) {
     printf("PAGE 6: NUMBER THEORY (CRT) & STRING MATCHING MODULE\n");
     printf("======================================================\n");
     printf("1. Chinese Remainder Theorem (Multi-Signal Green Wave Sync)\n");
-    printf("2. Incident Event Stream Search (Naive vs KMP Comparison)\n");
+    printf("2. Incident Event Stream Search (Naive, Rabin-Karp, Finite Automaton, KMP)\n");
     printf("Enter choice: ");
-    scanf("%d", &choice);
+    if (scanf("%d", &choice) != 1) return;
 
     if (choice == 1) {
         int tick = crt_sync(rem, mod, 3);
@@ -93,8 +164,10 @@ void run_math_string_page(void) {
         printf("Next Synchronized Green-Wave Tick (CRT): %d seconds\n", tick);
     } else if (choice == 2) {
         printf("Sensor Log: %s\n", log_stream);
-        printf("Searching Pattern: %s\n", pattern);
+        printf("Searching Pattern: %s\n\n", pattern);
         naive_search(log_stream, pattern);
+        rabin_karp_search(log_stream, pattern);
+        finite_automaton_search(log_stream, pattern);
         kmp_search(log_stream, pattern);
     } else {
         printf("Invalid choice.\n");

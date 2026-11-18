@@ -30,7 +30,7 @@ typedef struct {
 /* Page 1: Divide & Conquer + Sorting */
 void run_dnc_page(Road roads[], int E);
 
-/* Page 2: Greedy Algorithms (Signal Scheduling, Dijkstra, Kruskal, Prim, Fractional Knapsack, Huffman) */
+/* Page 2: Greedy Algorithms (Activity Selection, Dijkstra, Kruskal, Prim, Fractional Knapsack, Huffman) */
 void run_greedy_page(int V, Road roads[], int E, SignalReq reqs[], int N);
 
 /* Page 3: Dynamic Programming (0/1 Knapsack, Floyd-Warshall, Bellman-Ford, Matrix Chain, LCS, TSP) */
@@ -42,7 +42,7 @@ void run_backtracking_bnb_page(SignalReq reqs[], int N);
 /* Page 5: Network Flow & Bipartite Matching (Ford-Fulkerson & Max Matching) */
 void run_flow_matching_page(int V, Road roads[], int E);
 
-/* Page 6: Number Theory & String Matching (Chinese Remainder Theorem, Naive, Rabin-Karp, KMP) */
+/* Page 6: Number Theory & String Matching (CRT, Naive, Rabin-Karp, Finite Automaton, KMP) */
 void run_math_string_page(void);
 
 #endif

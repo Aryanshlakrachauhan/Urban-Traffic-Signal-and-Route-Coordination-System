@@ -106,7 +106,7 @@ void run_flow_matching_page(int V, Road roads[], int E) {
     printf("1. Ford-Fulkerson Max Traffic Throughput (Junction 0 -> %d)\n", V - 1);
     printf("2. Maximum Bipartite Matching (Traffic Units to Junctions)\n");
     printf("Enter choice: ");
-    scanf("%d", &choice);
+    if (scanf("%d", &choice) != 1) return;
 
     if (choice == 1) {
         int flow = ford_fulkerson_flow(V, roads, E, 0, V - 1);

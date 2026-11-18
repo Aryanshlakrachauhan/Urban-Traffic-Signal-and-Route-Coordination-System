@@ -82,7 +82,7 @@ void run_backtracking_bnb_page(SignalReq reqs[], int N) {
     printf("2. N-Queens Constraint Solver (4x4 Radar Placement)\n");
     printf("3. Branch & Bound 0/1 Knapsack (Pruned Exact Search)\n");
     printf("Enter choice: ");
-    scanf("%d", &choice);
+    if (scanf("%d", &choice) != 1) return;
 
     if (choice == 1) {
         printf("Available Signal Loads: {10, 15, 20, 25, 30}\n");

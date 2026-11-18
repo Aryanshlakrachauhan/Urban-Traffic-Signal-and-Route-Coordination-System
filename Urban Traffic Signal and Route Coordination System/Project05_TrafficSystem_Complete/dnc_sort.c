@@ -120,7 +120,7 @@ void run_dnc_page(Road roads[], int E) {
     printf("3. Search Junction ID (Iterative & Recursive Binary Search)\n");
     printf("4. Find Peak Congestion Window (Max Subarray D&C)\n");
     printf("Enter choice: ");
-    scanf("%d", &choice);
+    if (scanf("%d", &choice) != 1) return;
 
     if (choice == 1 || choice == 2) {
         if (choice == 1) merge_sort_roads(copy, 0, E - 1);

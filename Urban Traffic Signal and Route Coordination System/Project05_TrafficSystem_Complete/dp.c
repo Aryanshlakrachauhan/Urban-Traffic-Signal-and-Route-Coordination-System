@@ -84,6 +84,31 @@ void dp_bellman_ford(int V, Road roads[], int E, int src) {
     }
 }
 
+/* --- BACKEND: Matrix Chain Multiplication (Traffic Flow Transition Matrices) --- */
+void dp_matrix_chain(void) {
+    /* Dimensions of 4 consecutive corridor flow transition matrices: 10x20, 20x5, 5x15, 15x10 */
+    int p[] = {10, 20, 5, 15, 10};
+    int n = 5;
+    int m[10][10];
+    int i, j, k, L, q;
+
+    for (i = 1; i < n; i++) m[i][i] = 0;
+
+    for (L = 2; L < n; L++) {
+        for (i = 1; i < n - L + 1; i++) {
+            j = i + L - 1;
+            m[i][j] = INF;
+            for (k = i; k <= j - 1; k++) {
+                q = m[i][k] + m[k + 1][j] + p[i - 1] * p[k] * p[j];
+                if (q < m[i][j]) m[i][j] = q;
+            }
+        }
+    }
+    printf("\nMatrix Chain Multiplication (Corridor Transition Matrices):\n");
+    printf("  Dimensions: {10x20, 20x5, 5x15, 15x10}\n");
+    printf("  Minimum Scalar Operations Required: %d\n", m[1][n - 1]);
+}
+
 /* --- BACKEND: Longest Common Subsequence (Route Pattern Similarity) --- */
 void dp_lcs_routes(const char* r1, const char* r2) {
     int m = (int)strlen(r1);
@@ -102,6 +127,51 @@ void dp_lcs_routes(const char* r1, const char* r2) {
     printf("Shared Junction Sequence Length (LCS): %d\n", dp[m][n]);
 }
 
+/* --- BACKEND: Traveling Salesperson Problem (Maintenance Patrol Tour via Bitmask DP) --- */
+void dp_tsp_patrol(void) {
+    /* 4-Junction Inspection Tour Cost Matrix */
+    int n = 4;
+    int dist[4][4] = {
+        {0, 10, 15, 20},
+        {10, 0, 35, 25},
+        {15, 35, 0, 30},
+        {20, 25, 30, 0}
+    };
+    int dp[16][4];
+    int mask, pos, next;
+
+    for (mask = 0; mask < (1 << n); mask++)
+        for (pos = 0; pos < n; pos++)
+            dp[mask][pos] = INF;
+
+    dp[1][0] = 0; /* Start at Depot Junction 0 */
+
+    for (mask = 1; mask < (1 << n); mask++) {
+        for (pos = 0; pos < n; pos++) {
+            if ((mask & (1 << pos)) && dp[mask][pos] != INF) {
+                for (next = 0; next < n; next++) {
+                    if (!(mask & (1 << next))) {
+                        int nmask = mask | (1 << next);
+                        if (dp[mask][pos] + dist[pos][next] < dp[nmask][next]) {
+                            dp[nmask][next] = dp[mask][pos] + dist[pos][next];
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    int ans = INF;
+    int full_mask = (1 << n) - 1;
+    for (pos = 1; pos < n; pos++) {
+        if (dp[full_mask][pos] + dist[pos][0] < ans) {
+            ans = dp[full_mask][pos] + dist[pos][0];
+        }
+    }
+    printf("\nTSP Held-Karp Bitmask DP (4-Junction Patrol Inspection Tour):\n");
+    printf("  Minimum Closed-Loop Patrol Travel Time: %d mins\n", ans);
+}
+
 /* --- FRONTEND: Page 3 Menu --- */
 void run_dp_page(int V, Road roads[], int E, SignalReq reqs[], int N) {
     int choice, budget;
@@ -111,9 +181,11 @@ void run_dp_page(int V, Road roads[], int E, SignalReq reqs[], int N) {
     printf("1. 0/1 Knapsack (Exact Signal Upgrade Allocation)\n");
     printf("2. Floyd-Warshall (All-Pairs City Travel Matrix)\n");
     printf("3. Bellman-Ford (Single-Source with Rebate Support)\n");
-    printf("4. Longest Common Subsequence (Corridor Overlap)\n");
+    printf("4. Matrix Chain Multiplication (Flow Matrix Evaluation)\n");
+    printf("5. Longest Common Subsequence (Corridor Overlap)\n");
+    printf("6. Traveling Salesperson Problem (Patrol Tour Bitmask DP)\n");
     printf("Enter choice: ");
-    scanf("%d", &choice);
+    if (scanf("%d", &choice) != 1) return;
 
     if (choice == 1) {
         printf("Enter Integer Budget (1 to 100): ");
@@ -124,7 +196,11 @@ void run_dp_page(int V, Road roads[], int E, SignalReq reqs[], int N) {
     } else if (choice == 3) {
         dp_bellman_ford(V, roads, E, 0);
     } else if (choice == 4) {
+        dp_matrix_chain();
+    } else if (choice == 5) {
         dp_lcs_routes("J0-J1-J2-J4-J5", "J0-J2-J4-J5");
+    } else if (choice == 6) {
+        dp_tsp_patrol();
     } else {
         printf("Invalid choice.\n");
     }
