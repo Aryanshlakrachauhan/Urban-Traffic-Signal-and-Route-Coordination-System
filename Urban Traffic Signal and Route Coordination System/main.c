@@ -51,9 +51,8 @@ int main(void) {
         printf("  [3] Page 3: Dynamic Programming (0/1 Knapsack, Floyd, Bellman, Matrix Chain, LCS, TSP)\n");
         printf("  [4] Page 4: Backtracking & Branch-and-Bound\n");
         printf("  [5] Page 5: Network Flow (Ford-Fulkerson) & Bipartite Matching\n");
-        printf("  [6] Page 6: Chinese Remainder Theorem & String Matching (Naive, RK, FA, KMP)\n");
-        printf("  [7] View Road Network Status\n");
-        printf("  [8] Toggle Road Incident Blockage (Live Demo Scenario Shock)\n");
+        printf("  [6] View Road Network Status\n");
+        printf("  [7] Toggle Road Incident Blockage (Live Demo Scenario Shock)\n");
         printf("  [0] Exit\n");
         printf("Select Page / Option: ");
 
@@ -81,12 +80,9 @@ int main(void) {
                 run_flow_matching_page(V, roads, E);
                 break;
             case 6:
-                run_math_string_page();
-                break;
-            case 7:
                 print_network_status(V, roads, E);
                 break;
-            case 8:
+            case 7:
                 print_network_status(V, roads, E);
                 printf("Enter Road Index (0 to %d) to block/unblock: ", E - 1);
                 if (scanf("%d", &road_idx) == 1 && road_idx >= 0 && road_idx < E) {
