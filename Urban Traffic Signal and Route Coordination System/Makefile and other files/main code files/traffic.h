@@ -42,7 +42,4 @@ void run_backtracking_bnb_page(SignalReq reqs[], int N);
 /* Page 5: Network Flow & Bipartite Matching (Ford-Fulkerson & Max Matching) */
 void run_flow_matching_page(int V, Road roads[], int E);
 
-/* Page 6: Number Theory & String Matching (CRT, Naive, Rabin-Karp, Finite Automaton, KMP) */
-void run_math_string_page(void);
-
 #endif
